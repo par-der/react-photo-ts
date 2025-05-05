@@ -10,7 +10,6 @@ const App = () => {
         const checkToken = async () => {
             try {
                 const token = API_TOKEN_KEY ? API_TOKEN_KEY : null;
-                console.log(token)
                 if (token) {
                     useAuthStore.setState({token, isAuthenticated: true});
                 }
