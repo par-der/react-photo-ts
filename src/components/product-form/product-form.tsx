@@ -24,8 +24,6 @@ const ProductForm = () => {
     );
     const [preview, setPreview] = useState<string | null>(null);
     const [fileKey, setFileKey] = useState(Date.now());
-    const [searchEnabled, setSearchEnabled] = useState(false);
-
     const navigate = useNavigate();
     const imageInput = watch('main_image');
 
@@ -60,7 +58,6 @@ const ProductForm = () => {
             formData.append("article", data.article);
             formData.append("title", data.title);
             formData.append("main_image", data.main_image ?? '');
-            setSearchEnabled(!searchEnabled);
             mutate(formData, {
                 onSuccess: (data) => {
                     toast.success('Продукт успешно создан ' + data.title);
