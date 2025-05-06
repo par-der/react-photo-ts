@@ -1,7 +1,8 @@
 import {useGetProductsQuery} from "../../services/api/queries.ts";
 import Product from "../../components/product/product.tsx";
 import SearchInput from "../../components/search-input/search-input.tsx";
-import {useState} from "react";
+import {useEffect, useState} from "react";
+import {useDebounce} from "@uidotdev/usehooks";
 import {Button, Pagination} from "@mui/material";
 import LoadingSpinner from "../../components/common/loading-spinner/loading-spinner.tsx";
 import {useNavigate} from "react-router";
@@ -10,9 +11,16 @@ import {NAVIGATION_ROUTES} from "../../constants/routes.ts";
 const HomePage = () => {
     const [page, setPage] = useState(1);
     const [search, setSearch] = useState('');
-    const {data: products, isLoading, isError, error} = useGetProductsQuery({'page': String(page), 'search': search});
+    const debouncedSearchTerm = useDebounce(search, 500);
+    const {data: products, isLoading, isError, error} = useGetProductsQuery({
+        'page': String(page),
+        'search': debouncedSearchTerm
+    });
     const navigate = useNavigate();
 
+    useEffect(() => {
+        setPage(1);
+    }, [debouncedSearchTerm]);
 
     if (isError) {
         return <div>Error: {error?.message}</div>;
