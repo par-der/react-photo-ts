@@ -11,3 +11,12 @@ export const useGetProductsQuery = (params?: Record<string, string>) => {
     })
 }
 
+export const useSearchProductsQuery = (query: string, enabled: boolean) => {
+
+    return useQuery<IPaginatedResponse<IProduct>, Error>({
+        queryKey: ['products', query],
+        queryFn: () => getProducts({'search': query}),
+        enabled: enabled
+    })
+}
+

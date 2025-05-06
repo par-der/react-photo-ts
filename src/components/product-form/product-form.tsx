@@ -3,19 +3,38 @@ import {Controller, SubmitHandler, useForm} from "react-hook-form";
 import {IProductRequest} from "../../types/product.ts";
 import {useEffect, useState} from "react";
 import {Button, FormControl, TextField} from "@mui/material";
+import {toast} from "react-toastify";
+import {useNavigate} from "react-router";
+import {NAVIGATION_ROUTES} from "../../constants/routes.ts";
+import {useQueryClient} from "@tanstack/react-query";
+import {getProducts} from "../../services/api/api.ts";
 
 const ProductForm = () => {
     const {mutate, isPending} = useCreateProductMutation();
-    const {control, handleSubmit, watch, formState: {errors}} = useForm<IProductRequest>();
+    const queryClient = useQueryClient();
+
+    const {control, handleSubmit, reset, watch, formState: {errors}, setError} = useForm<IProductRequest>(
+        {
+            defaultValues: {
+                article: '',
+                title: '',
+                main_image: null,
+            },
+        },
+    );
     const [preview, setPreview] = useState<string | null>(null);
+    const [fileKey, setFileKey] = useState(Date.now());
+    const [searchEnabled, setSearchEnabled] = useState(false);
+
+    const navigate = useNavigate();
     const imageInput = watch('main_image');
+
 
     useEffect(() => {
         if (imageInput) {
             const file = imageInput;
             if (file instanceof File) {
                 const reader = new FileReader();
-
                 reader.onload = () => {
                     setPreview(reader.result as string);
                 };
@@ -27,12 +46,38 @@ const ProductForm = () => {
     }, [imageInput]);
 
     const onSubmit: SubmitHandler<IProductRequest> = async (data) => {
-        const formData = new FormData();
-        formData.append("article", data.article);
-        formData.append("title", data.title);
-        formData.append("main_image", data.main_image);
-        mutate(formData);
+        try {
+            const existingProduct = await queryClient.fetchQuery({
+                queryKey: ['product', data.article],
+                queryFn: () => getProducts({'search': data.article}),
+            });
+            if (existingProduct.count > 0) {
+                setError('article', {message: 'Такой продукт уже существует'});
+                return;
+            }
+
+            const formData = new FormData();
+            formData.append("article", data.article);
+            formData.append("title", data.title);
+            formData.append("main_image", data.main_image ?? '');
+            setSearchEnabled(!searchEnabled);
+            mutate(formData, {
+                onSuccess: (data) => {
+                    toast.success('Продукт успешно создан ' + data.title);
+                    reset({article: '', title: '', main_image: null});
+                    setFileKey(Date.now());
+                    setPreview(null);
+                    navigate(NAVIGATION_ROUTES.HOME);
+                },
+                onError: () => {
+                    toast.error('Произошла ошибка при создании продукта');
+                },
+            });
+        } catch {
+            toast.error('Произошла ошибка при создании продукта');
+        }
     }
+
 
     return (
         <form onSubmit={handleSubmit(onSubmit)}
@@ -43,7 +88,9 @@ const ProductForm = () => {
                 rules={{required: 'Обязательное поле'}}
                 render={({field}) => (
                     <TextField {...field} type="text" placeholder="Артикул" label="Артикул" error={!!errors.article}
-                               helperText={errors.article?.message}/>
+                               helperText={errors.article?.message}
+
+                    />
                 )}
             />
             <Controller
@@ -63,6 +110,7 @@ const ProductForm = () => {
                     render={({field: {onChange, value, ...rest}}) => (
                         <>
                             <input
+                                key={fileKey}
                                 type="file"
                                 id="main_image"
                                 hidden
@@ -87,7 +135,7 @@ const ProductForm = () => {
                     )}
                 />
             </FormControl>
-            <Button type="submit" variant="contained" color="success" disabled={isPending}>
+            <Button type="submit" variant="contained" disabled={isPending}>
                 {isPending ? 'Сохранение...' : 'Сохранить'}
             </Button>
         </form>

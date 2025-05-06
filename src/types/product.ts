@@ -9,5 +9,5 @@ export interface IProduct {
 export interface IProductRequest {
     article: string;
     title: string;
-    main_image: File;
+    main_image: File | null;
 }

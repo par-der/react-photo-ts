@@ -1,10 +1,25 @@
 import {IProduct} from "../../types/product.ts";
+import {useDeleteProductMutation} from "../../services/api/mutations.ts";
+import {toast} from "react-toastify";
+import {useQueryClient} from "@tanstack/react-query";
 
 interface ProductProps {
     product: IProduct
 }
 
 const Product = ({product}: ProductProps) => {
+    const {mutate: deleteProduct} = useDeleteProductMutation();
+    const queryClient = useQueryClient();
+
+    const handleDelete = async () => deleteProduct(product.id, {
+        onSuccess: () => {
+            toast.success('Продукт успешно удален');
+            queryClient.invalidateQueries({queryKey: ['products']});
+        },
+        onError: () => {
+            toast.error('Произошла ошибка при удалении продукта');
+        },
+    });
     return (
         <article
             key={product.id}
@@ -57,6 +72,7 @@ const Product = ({product}: ProductProps) => {
                     </button>
 
                     <button
+                        onClick={handleDelete}
                         className="flex-1 px-4 py-2 bg-pink-600 hover:bg-pink-700 text-white text-sm
                       font-medium rounded-lg transition-colors duration-200 flex items-center justify-center gap-2 cursor-pointer"
                     >

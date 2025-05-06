@@ -21,10 +21,11 @@ const HomePage = () => {
     return (
         <div className="w-full flex flex-col gap-4 p-4 container mx-auto">
             <div className="w-full">
+                {/*TODO добавить debounced*/}
                 <SearchInput search={search} setSearch={setSearch}/>
             </div>
             <div className="w-full flex items-center border border-gray-200 p-4 rounded-lg bg-neutral-50 ">
-                <Button onClick={() => navigate(NAVIGATION_ROUTES.PRODUCTS_ADD)} variant="outlined" color="success"
+                <Button onClick={() => navigate(NAVIGATION_ROUTES.PRODUCTS_ADD)} variant="contained"
                         size="small"
                         startIcon={<span className="material-symbols-outlined">+</span>}>
                     Добавить

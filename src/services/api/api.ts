@@ -12,3 +12,5 @@ export const createProduct = async (data: FormData): Promise<IProduct> => {
     const response = await formApiClient.post("products/", data);
     return response.data;
 }
+
+export const deleteProduct = async (id: number): Promise<void> => await apiClient.delete(`products/${id}`);
