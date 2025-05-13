@@ -7,6 +7,7 @@ import LoadingSpinner from "../components/common/loading-spinner/loading-spinner
 const HomePage = lazy(() => import("../pages/home-page/home-page.tsx"))
 const LoginPage = lazy(() => import("../pages/login-page/login-page.tsx"))
 const ProductAddPage = lazy(() => import("../pages/product-add-page/product-add-page.tsx"))
+const EditPage = lazy(() => import("../pages/edit-page/edit-page.tsx"))
 
 export const router = createBrowserRouter(
     [
@@ -26,6 +27,14 @@ export const router = createBrowserRouter(
                     element: (
                         <Suspense fallback={<LoadingSpinner/>}>
                             <ProductAddPage/>
+                        </Suspense>
+                    )
+                },
+                {
+                    path: NAVIGATION_ROUTES.PRODUCTS_EDIT,
+                    element: (
+                        <Suspense fallback={<LoadingSpinner/>}>
+                            <EditPage/>
                         </Suspense>
                     )
                 }

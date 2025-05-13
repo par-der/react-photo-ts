@@ -2,6 +2,8 @@ import {IProduct} from "../../types/product.ts";
 import {useDeleteProductMutation} from "../../services/api/mutations.ts";
 import {toast} from "react-toastify";
 import {useQueryClient} from "@tanstack/react-query";
+import {NAVIGATION_ROUTES} from "../../constants/routes.ts";
+import {generatePath, useNavigate} from "react-router";
 
 interface ProductProps {
     product: IProduct
@@ -10,6 +12,7 @@ interface ProductProps {
 const Product = ({product}: ProductProps) => {
     const {mutate: deleteProduct} = useDeleteProductMutation();
     const queryClient = useQueryClient();
+    const navigate = useNavigate();
 
     const handleDelete = async () => deleteProduct(product.id, {
         onSuccess: () => {
@@ -63,6 +66,7 @@ const Product = ({product}: ProductProps) => {
                     <button
                         className="flex-1 px-4 py-2 bg-neutral-600 hover:bg-neutral-700 text-white text-sm
                       font-medium rounded-lg transition-colors duration-200 flex items-center justify-center gap-2 cursor-pointer"
+                        onClick={() => navigate(generatePath(NAVIGATION_ROUTES.PRODUCTS_EDIT, {id: product.id}))}
                     >
                         <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2"

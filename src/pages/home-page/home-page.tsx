@@ -32,7 +32,7 @@ const HomePage = () => {
                 {/*TODO добавить debounced*/}
                 <SearchInput search={search} setSearch={setSearch}/>
             </div>
-            <div className="w-full flex items-center border border-gray-200 p-4 rounded-lg bg-neutral-50 ">
+            <div className="w-full flex items-center border border-gray-200 gap-1.5 p-4 rounded-lg bg-neutral-50 ">
                 <Button onClick={() => navigate(NAVIGATION_ROUTES.PRODUCTS_ADD)} variant="contained"
                         size="small"
                         startIcon={<span className="material-symbols-outlined">+</span>}>
